@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 // Load MapContainer dengan `ssr: false`
 const MapContainer = dynamic(() => import("react-leaflet").then(mod => mod.MapContainer), {
@@ -20,30 +21,25 @@ const Popup = dynamic(() => import("react-leaflet").then(mod => mod.Popup), {
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
-let villageIcon:
-  | L.Icon<{
-      iconUrl: string;
-      iconSize: [number, number];
-      iconAnchor: [number, number];
-    }>
-  | L.Icon<L.IconOptions>
-  | L.DivIcon
-  | undefined;
-
-// Periksa keberadaan window sebelum mengaksesnya
-if (typeof window !== "undefined") {
-  villageIcon = new L.Icon({
-    iconUrl: "https://img.icons8.com/emoji/48/000000/village-emoji.png",
-    iconSize: [32, 32],
-    iconAnchor: [16, 32],
-  });
-}
-
 const DesaMapUI = () => {
   const desaCoordinates = {
     lat: -7.566562,
     lng: 112.2220404,
   };
+
+  const [villageIcon, setVillageIcon] = useState<L.Icon | undefined>(undefined);
+
+  useEffect(() => {
+    // Periksa keberadaan window hanya di sisi klien
+    if (typeof window !== "undefined") {
+      const icon = new L.Icon({
+        iconUrl: "https://img.icons8.com/emoji/48/000000/village-emoji.png",
+        iconSize: [32, 32],
+        iconAnchor: [16, 32],
+      });
+      setVillageIcon(icon);
+    }
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-100 py-8 px-4">
@@ -59,31 +55,33 @@ const DesaMapUI = () => {
         <h1 className="text-2xl font-bold text-center text-blue-600 mb-8">
           Peta Lokasi Desa
         </h1>
-        {/* Gunakan MapContainer hanya jika sudah di sisi klien */}
-        <MapContainer
-          center={[desaCoordinates.lat, desaCoordinates.lng]}
-          zoom={13}
-          style={{ width: "100%", height: "500px" }}
-        >
-          <TileLayer
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          />
-          <Marker
-            position={[desaCoordinates.lat, desaCoordinates.lng]}
-            icon={villageIcon}
+        {/* Render MapContainer hanya jika villageIcon sudah siap */}
+        {villageIcon && (
+          <MapContainer
+            center={[desaCoordinates.lat, desaCoordinates.lng]}
+            zoom={13}
+            style={{ width: "100%", height: "500px" }}
           >
-            <Popup>
-              <div>
-                <h3 className="text-lg font-bold">Desa Contoh</h3>
-                <p className="text-sm">
-                  Lokasi desa ini adalah contoh penggunaan peta dengan Leaflet
-                  dan React.
-                </p>
-              </div>
-            </Popup>
-          </Marker>
-        </MapContainer>
+            <TileLayer
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            />
+            <Marker
+              position={[desaCoordinates.lat, desaCoordinates.lng]}
+              icon={villageIcon}
+            >
+              <Popup>
+                <div>
+                  <h3 className="text-lg font-bold">Desa Contoh</h3>
+                  <p className="text-sm">
+                    Lokasi desa ini adalah contoh penggunaan peta dengan Leaflet
+                    dan React.
+                  </p>
+                </div>
+              </Popup>
+            </Marker>
+          </MapContainer>
+        )}
       </div>
     </div>
   );
