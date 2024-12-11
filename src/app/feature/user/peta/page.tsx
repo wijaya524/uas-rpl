@@ -1,9 +1,9 @@
-import DesaMapUI from "./index";
+
 
 export default function PetaPage() {
   return (
     <div>
-      <DesaMapUI />
+      peta belum tersedia
     </div>
   );
 }
