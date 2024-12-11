@@ -1,10 +1,24 @@
 "use client";
 
-import React from "react";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import dynamic from "next/dynamic";
+import Link from "next/link";
+
+// Load MapContainer dengan `ssr: false`
+const MapContainer = dynamic(() => import("react-leaflet").then(mod => mod.MapContainer), {
+  ssr: false,
+});
+const TileLayer = dynamic(() => import("react-leaflet").then(mod => mod.TileLayer), {
+  ssr: false,
+});
+const Marker = dynamic(() => import("react-leaflet").then(mod => mod.Marker), {
+  ssr: false,
+});
+const Popup = dynamic(() => import("react-leaflet").then(mod => mod.Popup), {
+  ssr: false,
+});
+
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import Link from "next/link";
 
 let villageIcon:
   | L.Icon<{
@@ -45,32 +59,31 @@ const DesaMapUI = () => {
         <h1 className="text-2xl font-bold text-center text-blue-600 mb-8">
           Peta Lokasi Desa
         </h1>
-        {typeof window !== "undefined" && (
-          <MapContainer
-            center={[desaCoordinates.lat, desaCoordinates.lng]}
-            zoom={13}
-            style={{ width: "100%", height: "500px" }}
+        {/* Gunakan MapContainer hanya jika sudah di sisi klien */}
+        <MapContainer
+          center={[desaCoordinates.lat, desaCoordinates.lng]}
+          zoom={13}
+          style={{ width: "100%", height: "500px" }}
+        >
+          <TileLayer
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          />
+          <Marker
+            position={[desaCoordinates.lat, desaCoordinates.lng]}
+            icon={villageIcon}
           >
-            <TileLayer
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            />
-            <Marker
-              position={[desaCoordinates.lat, desaCoordinates.lng]}
-              icon={villageIcon}
-            >
-              <Popup>
-                <div>
-                  <h3 className="text-lg font-bold">Desa Contoh</h3>
-                  <p className="text-sm">
-                    Lokasi desa ini adalah contoh penggunaan peta dengan Leaflet
-                    dan React.
-                  </p>
-                </div>
-              </Popup>
-            </Marker>
-          </MapContainer>
-        )}
+            <Popup>
+              <div>
+                <h3 className="text-lg font-bold">Desa Contoh</h3>
+                <p className="text-sm">
+                  Lokasi desa ini adalah contoh penggunaan peta dengan Leaflet
+                  dan React.
+                </p>
+              </div>
+            </Popup>
+          </Marker>
+        </MapContainer>
       </div>
     </div>
   );
