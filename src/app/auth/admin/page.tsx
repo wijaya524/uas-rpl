@@ -8,7 +8,6 @@ const AuthAdmin = () => {
     <div className="flex justify-center items-center h-screen bg-gray-100 px-4 sm:px-6 lg:px-8">
       <form
         action="/dashboard/admin"
-        method="post"
         className="bg-white shadow-md rounded px-6 pt-6 pb-8 mb-4 w-full sm:max-w-sm"
       >
         <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">Admin Authentication</h2>
